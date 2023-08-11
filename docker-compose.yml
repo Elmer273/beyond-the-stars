@@ -1,0 +1,42 @@
+version: 'latest'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: server
+    command: pm2-runtime start server/ecosystem.config.cjs
+    ports:
+      - '3000:3000'
+      - '3001:3001'
+      - '3002:3002'
+    networks:
+      - my-network
+    depends_on:
+      - mongo
+
+  mongo: 
+    build:
+      context: ./server/db
+      dockerfile: Dockerfile
+    container_name: db
+    ports:
+      - '27017:27017'
+    networks:
+      - my-network
+  
+  nginx:
+    build:
+      context: ./server/nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    ports:
+      - '80:80'
+    links:
+      - server:server
+    networks:
+      - my-network
+networks:
+  my-network:
+    driver: bridge

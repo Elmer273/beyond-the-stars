@@ -1,0 +1,7 @@
+FROM mongo:latest
+
+ENV MONGO_INIT_DATABASE=db
+
+EXPOSE 27017
+
+CMD ["mongod"]
