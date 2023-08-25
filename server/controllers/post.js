@@ -1,26 +1,34 @@
-import Post from "../db/models/Post";
-import User from "../db/models/User";
+import Post from "../db/models/Post.js";
+import User from "../db/models/User.js";
 
 const createPost = async (req, res) => {
    try {
       const {
          userId,
          description,
-         picturePath
+         picturePath,
+         isProfile
       } = req.body;
    
       const user = await User.findById(userId);
       const newPost = new Post({
          userId,
-         location,
+         firstName: user.firstName,
+         lastName: user.lastName,
+         location: user.location,
          description,
+         userPicturePath: user.picturePath,
          picturePath,
-         userPicturePath: user.picturePath
       });
    
       await newPost.save();
    
-      const posts = await Post.find();
+      let posts = null;
+      if(isProfile) {
+         posts = await Post.find({userId});
+      } else {
+         posts = await Post.find();
+      }
       res.status(201).json(posts);
    } catch(err) {
       res.status(409).json({error: err.message});
@@ -72,7 +80,7 @@ const likePost = async(req, res) => {
    }
 }
 
-export default {
+export {
    createPost,
    getAllPosts,
    getUserPosts,

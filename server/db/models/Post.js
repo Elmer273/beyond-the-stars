@@ -2,15 +2,22 @@ import mongoose from "mongoose";
 
 const PostSchema = new mongoose.Schema({
    userId: {
-      type: mongoose.Schema.Types.ObjectId, 
-      ref: 'User',
+      type: String,
       required: true
    },
+   
+   firstName: {
+      type: String,
+      required: true,
+      min: 2,
+      max: 30
+   },
 
-   creation_date: {
-      type: Date,
-      required: false,
-      default: Date.now()
+   lastName: {
+      type: String,
+      required: true,
+      min: 2,
+      max: 30
    },
 
    likes: {
@@ -32,6 +39,6 @@ const PostSchema = new mongoose.Schema({
    {timestamps: true}
 );
 
-const Post = mongoose.Model("Post", PostSchema);
+const Post = mongoose.model("Post", PostSchema);
 
 export default Post;

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const URL = 'mongodb://mySocialMedia:27017/db';
+const URL = 'mongodb://localhost:27017/db';
 
 async function connectDB () {
    try {

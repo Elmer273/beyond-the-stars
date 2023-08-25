@@ -1,4 +1,4 @@
-import User from "../db/models/User";
+import User from "../db/models/User.js";
 
 const getUser = async (req, res) => {
    try {
@@ -58,7 +58,7 @@ const addRemoveFriend = async (req, res) => {
    }
 };
 
-export default {
+export {
    getUser,
    getUserFriends,
    addRemoveFriend
