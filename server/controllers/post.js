@@ -23,12 +23,8 @@ const createPost = async (req, res) => {
    
       await newPost.save();
    
-      let posts = null;
-      if(isProfile) {
-         posts = await Post.find({userId});
-      } else {
-         posts = await Post.find();
-      }
+      const posts = JSON.parse(isProfile) ? await Post.find({userId}) : await Post.find();
+
       res.status(201).json(posts);
    } catch(err) {
       res.status(409).json({error: err.message});
@@ -78,11 +74,28 @@ const likePost = async(req, res) => {
    } catch (err) {
       res.status(404).json({error: err.message});
    }
-}
+};
+
+const comment = async(req, res) => {
+   try {
+      const { id } = req.params;
+      const { comment } = req.body;
+      const post = await Post.findById(id);
+
+      post.comments.push(comment);
+      await post.save();
+      
+      const updatedPost = await Post.findById(id);
+      res.status(200).json(updatedPost);
+   } catch (err) {
+      res.status(404).json({error: err.message});
+   }
+};
 
 export {
    createPost,
    getAllPosts,
    getUserPosts,
-   likePost
+   likePost,
+   comment
 };
