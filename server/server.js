@@ -11,17 +11,20 @@ import connectDB from './db/conn.js';
 import authRoutes from './routes/auth.js';
 import postRoutes from './routes/post.js';
 import userRoutes from './routes/user.js';
-import verifyToken from './middleware/auth.js';
+import { verifyToken } from './middleware/auth.js';
 import { register } from './controllers/auth.js';
 import { createPost } from './controllers/post.js';
+import { users, posts } from "./data/data.js";
+import User from "./db/models/User.js";
+import Post from "./db/models/Post.js";
 
 // CONFIGURATIONS
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const PORT = 300 + process.env.NODE_APP_INSTANCE;
+const PORT = 500 + process.env.NODE_APP_INSTANCE || 5000;
 dotenv.config();
 const app = express();
-app.use(express.json);
+app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({policy: 'cross-origin'}));
 app.use(morgan('common'));
@@ -42,17 +45,21 @@ const storage = multer.diskStorage({
 const upload = multer({storage});
 
 //ROUTES
+app.post('/auth/register', upload.single('picture'), register);
+app.post('/posts', verifyToken, upload.single('picture'),createPost);
 app.use('/auth', authRoutes);
 app.use('/posts', postRoutes);
 app.use('/users', userRoutes);
-app.post('/auth/register', upload.single('picture', register));
-app.post('/posts', verifyToken, upload.single('picture'),createPost);
 
 // CONNECT DATABASE
 connectDB()
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server is running on port: ${PORT}`);
+
+      /* ADD DATA ONE TIME */
+    // User.insertMany(users);
+    // Post.insertMany(posts);
   });
 })
   .catch((err) => {

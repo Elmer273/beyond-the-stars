@@ -1,4 +1,4 @@
-import User from "../db/models/User";
+import User from "../db/models/User.js";
 
 const getUser = async (req, res) => {
    try {
@@ -35,8 +35,8 @@ const addRemoveFriend = async (req, res) => {
       const friend = await User.findById(friendId);
 
       if (user.friends.includes(friendId)) {
-         user.friends = user.friends.filter((id) => id !== friendId);
-         friend.friends = friend.friends.filter((id) => id !== id);
+         user.friends = user.friends.filter((id) => id.toString() !== friendId);
+         friend.friends = friend.friends.filter((id) => id.toString() !== id);
       } else {
          user.friends.push(friendId);
          friend.friends.push(id);
@@ -58,7 +58,7 @@ const addRemoveFriend = async (req, res) => {
    }
 };
 
-export default {
+export {
    getUser,
    getUserFriends,
    addRemoveFriend

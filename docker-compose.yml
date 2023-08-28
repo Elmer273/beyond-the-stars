@@ -1,16 +1,28 @@
 version: 'latest'
 
 services:
+  client:
+    build: 
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: client
+    ports:
+      - '3000:3000'
+    networks:
+      - my-network
+    depends_on:
+      - server
+      
   server:
     build:
       context: .
       dockerfile: server/Dockerfile
     container_name: server
-    command: pm2-runtime start server/ecosystem.config.cjs
+    command: pm2-runtime start ecosystem.config.cjs
     ports:
-      - '3000:3000'
-      - '3001:3001'
-      - '3002:3002'
+      - '5000:5000'
+      - '5001:5001'
+      - '5002:5002'
     networks:
       - my-network
     depends_on:

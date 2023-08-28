@@ -1,26 +1,30 @@
-import Post from "../db/models/Post";
-import User from "../db/models/User";
+import Post from "../db/models/Post.js";
+import User from "../db/models/User.js";
 
 const createPost = async (req, res) => {
    try {
       const {
          userId,
          description,
-         picturePath
+         picturePath,
+         isProfile
       } = req.body;
    
       const user = await User.findById(userId);
       const newPost = new Post({
          userId,
-         location,
+         firstName: user.firstName,
+         lastName: user.lastName,
+         location: user.location,
          description,
+         userPicturePath: user.picturePath,
          picturePath,
-         userPicturePath: user.picturePath
       });
    
       await newPost.save();
    
-      const posts = await Post.find();
+      const posts = JSON.parse(isProfile) ? await Post.find({userId}) : await Post.find();
+
       res.status(201).json(posts);
    } catch(err) {
       res.status(409).json({error: err.message});
@@ -70,11 +74,28 @@ const likePost = async(req, res) => {
    } catch (err) {
       res.status(404).json({error: err.message});
    }
-}
+};
 
-export default {
+const comment = async(req, res) => {
+   try {
+      const { id } = req.params;
+      const { comment } = req.body;
+      const post = await Post.findById(id);
+
+      post.comments.push(comment);
+      await post.save();
+      
+      const updatedPost = await Post.findById(id);
+      res.status(200).json(updatedPost);
+   } catch (err) {
+      res.status(404).json({error: err.message});
+   }
+};
+
+export {
    createPost,
    getAllPosts,
    getUserPosts,
-   likePost
+   likePost,
+   comment
 };
